@@ -131,7 +131,7 @@ def main():
   if p['state'] == 'present':
     install_packages(module, pkgs)
   elif p['state'] == 'absent':
-    remove_packages(module, pkgs, p['recurse']`)
+    remove_packages(module, pkgs, p['recurse'])
 
 
 from ansible.module_utils.basic import *
