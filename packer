@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python
 
 # The MIT License (MIT)
 #
@@ -36,6 +36,9 @@ def package_installed(module, pkg):
   rc, stdout, stderr = module.run_command('pacman -Q %s' % pkg, check_rc=False)
   return rc == 0
 
+def logname(module):
+  rc, stdout, stderr = module.run_command('logname', check_rc=True)
+  return stdout
 
 def check_packages(module, pkgs, state):
   would_be_changed = []
@@ -58,13 +61,14 @@ def check_packages(module, pkgs, state):
 def install_packages(module, pkgs):
   num_installed = 0
 
-  cmd = 'packer --noconfirm --noedit -S %s'
+  user = logname(module)
+  cmd = 'sudo -u %s packer --noconfirm --noedit -S %s'
 
   for pkg in pkgs:
     if package_installed(module, pkg):
       continue
 
-    rc, stdout, stderr = module.run_command(cmd % pkg, check_rc=False)
+    rc, stdout, stderr = module.run_command(cmd % (user, pkg), check_rc=False)
 
     if rc != 0:
       module.fail_json(msg='failed to install package %s, because: %s' % (pkg,stderr))
